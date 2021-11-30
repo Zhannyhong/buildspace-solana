@@ -1,5 +1,6 @@
 import twitterLogo from './assets/twitter-logo.svg';
 import './App.css';
+import {useEffect} from "react";
 
 // Constants
 const TWITTER_HANDLE = '_buildspace';
@@ -28,9 +29,13 @@ const App = () => {
   /*
    * Checks if a Phantom wallet is connected after the window has loaded.
    */
-  window.onload = () => {
-    isPhantomWalletConnected();
-  };
+  useEffect(() => {
+    const onLoad = async () => {
+      await isPhantomWalletConnected();
+    };
+    window.addEventListener('load', onLoad);
+    return () => window.removeEventListener('load', onLoad);
+  }, []);
 
   return (
     <div className="App">
