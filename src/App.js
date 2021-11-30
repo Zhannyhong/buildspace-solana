@@ -6,6 +6,32 @@ const TWITTER_HANDLE = '_buildspace';
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 const App = () => {
+
+  const isPhantomWalletConnected = async () => {
+    try {
+      const solana = window;
+
+      if (solana) {
+        if (solana.isPhantom) {
+          console.log("Phantom wallet found!")
+        }
+      }
+      else {
+        alert("Solana object not found! Get a Phantom wallet! 👻")
+      }
+    }
+    catch (err) {
+      console.log(err)
+    }
+  };
+
+  /*
+   * Checks if a Phantom wallet is connected after the window has loaded.
+   */
+  window.onload = () => {
+    isPhantomWalletConnected();
+  };
+
   return (
     <div className="App">
       <div className="container">
