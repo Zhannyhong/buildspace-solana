@@ -1,0 +1,12 @@
+[programs.devnet]
+mygifportal = "8D4EYepS4tfFvy8SJL2WiyigoaaEHQx6BHp3SJGqxHD9"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "devnet"
+wallet = "/Users/zhanny/.config/solana/id.json"
+
+[scripts]
+test = "node tests/mygifportal.js"
