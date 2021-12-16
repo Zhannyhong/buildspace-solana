@@ -3,6 +3,7 @@ import './App.css';
 import React, {useEffect, useState} from "react";
 import {clusterApiUrl, Connection, PublicKey} from '@solana/web3.js';
 import {Program, Provider, web3} from '@project-serum/anchor';
+import isURL from 'validator/lib/isURL';
 import idl from './idl.json';
 import keypair from './keypair.json';
 
@@ -38,16 +39,17 @@ const App = () => {
         try {
             const { solana } = window;
 
+            // Check for injected solana object
             if (solana && solana.isPhantom) {
                 console.log("Phantom wallet found!");
                 await connectPhantomWallet();
             }
             else {
-                console.log("Solana wallet not found! Get a Phantom wallet! 👻");
+                console.log("Solana wallet not found! Get a Phantom wallet NOW! 👻");
             }
         }
         catch (err) {
-            console.error(err)
+            console.log(err)
         }
     };
 
@@ -55,11 +57,14 @@ const App = () => {
         const { solana } = window;
 
         if (solana) {
+            console.log("Connecting to Phantom wallet...");
+
+            // Eagerly connect to Phantom wallet on page load (init is false)
             const response = await solana.connect(init ? {} : {onlyIfTrusted: true});
             const publicKey = response.publicKey.toString();
 
             setWalletAddress(publicKey);
-            console.log("Wallet public key:", publicKey);
+            console.log("Successfully connected to Phantom wallet! Wallet public key:", publicKey);
         }
         else window.open("https://phantom.app/", "_blank");
     };
@@ -67,10 +72,7 @@ const App = () => {
     const onInputChange = (event) => setInputValue(event.target.value);
 
     const submitGif = async () => {
-        if (inputValue.length === 0) {
-            console.log("No gif link provided! Please try again.");
-            return;
-        }
+        if (!isValidInput()) return false;
 
         setInputValue("");
         console.log("Gif link:", inputValue);
@@ -89,8 +91,22 @@ const App = () => {
             console.log("Gif successfully added!");
         }
         catch (error) {
-            console.error("Error submitting gif:", error);
+            console.log("Error submitting gif:", error);
         }
+    }
+
+    const isValidInput = () => {
+        if (inputValue.length === 0) {
+            console.log("No gif link provided! Please try again.");
+            return false;
+        }
+
+        if (!isURL(inputValue)) {
+            console.log("Invalid URL provided! Please try again.");
+            return false;
+        }
+
+        return true;
     }
 
     const getProvider = () => {
@@ -130,7 +146,7 @@ const App = () => {
             return account.gifList;
         }
         catch (error) {
-            console.error("Error getting gif list:", error);
+            console.log("Error getting gif list:", error);
             return null;
         }
     }
@@ -166,9 +182,8 @@ const App = () => {
                 event.preventDefault();
                 submitGif();
                 fetchGifList();
-
             }}>
-                <input required type="text" placeholder="Enter a F1-related GIF link! 🏎" value={inputValue} onChange={onInputChange}/>
+                <input required type="url" placeholder="Enter a F1-related GIF link! 🏎" value={inputValue} onChange={onInputChange}/>
                 <button type="submit" className="cta-button submit-gif-button">Submit</button>
             </form>
             {renderGifGrid()}
@@ -220,7 +235,7 @@ const App = () => {
                         href={TWITTER_LINK}
                         target="_blank"
                         rel="noreferrer"
-                    >{`built on @${TWITTER_HANDLE}`}</a>
+                    >{`learned on @${TWITTER_HANDLE}`}</a>
                 </div>
             </div>
         </div>
