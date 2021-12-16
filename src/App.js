@@ -166,7 +166,7 @@ const App = () => {
                 event.preventDefault();
                 submitGif();
                 fetchGifList();
-                
+
             }}>
                 <input required type="text" placeholder="Enter a F1-related GIF link! 🏎" value={inputValue} onChange={onInputChange}/>
                 <button type="submit" className="cta-button submit-gif-button">Submit</button>
