@@ -4,6 +4,7 @@ import React, {useEffect, useState} from "react";
 import {clusterApiUrl, Connection, PublicKey} from '@solana/web3.js';
 import {Program, Provider, web3} from '@project-serum/anchor';
 import isURL from 'validator/lib/isURL';
+import request from 'superagent';
 import idl from './idl.json';
 import keypair from './keypair.json';
 
@@ -72,7 +73,7 @@ const App = () => {
     const onInputChange = (event) => setInputValue(event.target.value);
 
     const submitGif = async () => {
-        if (!isValidInput()) return false;
+        if (!await isValidInput(inputValue)) return false;
 
         setInputValue("");
         console.log("Gif link:", inputValue);
@@ -95,14 +96,27 @@ const App = () => {
         }
     }
 
-    const isValidInput = () => {
-        if (inputValue.length === 0) {
+    const isValidInput = async (input) => {
+        if (input.length === 0) {
             console.log("No gif link provided! Please try again.");
             return false;
         }
 
-        if (!isURL(inputValue)) {
+        if (!isURL(input)) {
             console.log("Invalid URL provided! Please try again.");
+            return false;
+        }
+
+        try {
+            const response = await request.head(input);
+
+            if (response.type !== "image/gif") {
+                console.log("URL provided is not a GIF! Please try again.");
+                return false;
+            }
+        }
+        catch (error) {
+            console.log("Error validating gif link:", error);
             return false;
         }
 
@@ -180,8 +194,7 @@ const App = () => {
         <div className="connected-container">
             <form onSubmit={(event) => {
                 event.preventDefault();
-                submitGif();
-                fetchGifList();
+                submitGif().then(fetchGifList);
             }}>
                 <input required type="url" placeholder="Enter a F1-related GIF link! 🏎" value={inputValue} onChange={onInputChange}/>
                 <button type="submit" className="cta-button submit-gif-button">Submit</button>
