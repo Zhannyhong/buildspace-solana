@@ -3,18 +3,17 @@ import './App.css';
 import React, {useEffect, useState} from "react";
 import {clusterApiUrl, Connection, PublicKey} from '@solana/web3.js';
 import {Program, Provider, web3} from '@project-serum/anchor';
+import CandyMachine from './CandyMachine';
 import isURL from 'validator/lib/isURL';
 import request from 'superagent';
 import idl from './idl.json';
 import keypair from './keypair.json';
 
 // Constants
-const { SystemProgram, Keypair } = web3;
+const {SystemProgram, Keypair} = web3;
 const programID = new PublicKey(idl.metadata.address);
 const network = clusterApiUrl("devnet");
-const options = {
-    preflightCommitment: "processed"
-};
+const options = {preflightCommitment: "processed"};
 
 const secretKey = new Uint8Array(Object.values(keypair._keypair.secretKey));
 const baseAccount = Keypair.fromSecretKey(secretKey);
@@ -38,24 +37,22 @@ const App = () => {
     // Actions
     const checkForPhantomWallet = async () => {
         try {
-            const { solana } = window;
+            const {solana} = window;
 
             // Check for injected solana object
             if (solana && solana.isPhantom) {
                 console.log("Phantom wallet found!");
                 await connectPhantomWallet();
-            }
-            else {
+            } else {
                 console.log("Solana wallet not found! Get a Phantom wallet NOW! 👻");
             }
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err)
         }
     };
 
     const connectPhantomWallet = async (init = false) => {
-        const { solana } = window;
+        const {solana} = window;
 
         if (solana) {
             console.log("Connecting to Phantom wallet...");
@@ -66,8 +63,7 @@ const App = () => {
 
             setWalletAddress(publicKey);
             console.log("Successfully connected to Phantom wallet! Wallet public key:", publicKey);
-        }
-        else window.open("https://phantom.app/", "_blank");
+        } else window.open("https://phantom.app/", "_blank");
     };
 
     const onInputChange = (event) => setInputValue(event.target.value);
@@ -90,8 +86,7 @@ const App = () => {
                 }
             });
             console.log("Gif successfully added!");
-        }
-        catch (error) {
+        } catch (error) {
             console.log("Error submitting gif:", error);
         }
     }
@@ -114,9 +109,13 @@ const App = () => {
                 console.log("URL provided is not a GIF! Please try again.");
                 return false;
             }
-        }
-        catch (error) {
+        } catch (error) {
             console.log("Error validating gif link:", error);
+            return false;
+        }
+
+        if (gifList.includes(input)) {
+            console.log("Gif already submitted! Please submit another gif.");
             return false;
         }
 
@@ -144,8 +143,7 @@ const App = () => {
             });
 
             console.log("New BaseAccount address:", baseAccount.publicKey.toString());
-        }
-        catch (error) {
+        } catch (error) {
             console.log("Error creating BaseAccount:", error);
         }
     }
@@ -158,8 +156,7 @@ const App = () => {
 
             console.log("Account:", account);
             return account.gifList;
-        }
-        catch (error) {
+        } catch (error) {
             console.log("Error getting gif list:", error);
             return null;
         }
@@ -179,12 +176,17 @@ const App = () => {
     )
 
     const renderConnectedContainer = () => (
-        gifList.length > 0 ? renderGifPortal() : renderInitialiseAccountButton()
+        <div>
+            <CandyMachine walletAddress={window.solana}/>
+            {gifList === null ? renderInitialiseAccountButton() : renderGifPortal()}
+        </div>
     )
 
     const renderInitialiseAccountButton = () => (
         <div className="connected-container">
-            <button className="cta-button submit-gif-button" onClick={createGifAccount && fetchGifList}>
+            <button className="cta-button submit-gif-button" onClick={() => {
+                createGifAccount().then(fetchGifList)
+            }}>
                 Create GIF Account
             </button>
         </div>
@@ -196,7 +198,8 @@ const App = () => {
                 event.preventDefault();
                 submitGif().then(fetchGifList);
             }}>
-                <input required type="url" placeholder="Enter a F1-related GIF link! 🏎" value={inputValue} onChange={onInputChange}/>
+                <input required type="url" placeholder="Enter a F1-related GIF link! 🏎" value={inputValue}
+                       onChange={onInputChange}/>
                 <button type="submit" className="cta-button submit-gif-button">Submit</button>
             </form>
             {renderGifGrid()}
@@ -223,7 +226,7 @@ const App = () => {
         return () => window.removeEventListener('load', onload);
     }, []);
 
-    useEffect( () => {
+    useEffect(() => {
         if (walletAddress) {
             console.log("Fetching GIF list...");
             fetchGifList();
@@ -242,7 +245,7 @@ const App = () => {
                     {walletAddress ? renderConnectedContainer() : renderConnectWalletButton()}
                 </div>
                 <div className="footer-container">
-                    <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
+                    <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo}/>
                     <a
                         className="footer-text"
                         href={TWITTER_LINK}

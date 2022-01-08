@@ -1,5 +1,8 @@
+[programs.localnet]
+mygifportal = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+
 [programs.devnet]
-mygifportal = "8D4EYepS4tfFvy8SJL2WiyigoaaEHQx6BHp3SJGqxHD9"
+mygifportal = "494g856aNoMPdqu4n6KMwmLKfPTfxn3FtMwVqhZrvHuC"
 
 [registry]
 url = "https://anchor.projectserum.com"

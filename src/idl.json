@@ -43,6 +43,53 @@
           "type": "string"
         }
       ]
+    },
+    {
+      "name": "upvoteGif",
+      "accounts": [
+        {
+          "name": "baseAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "gifLink",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "sendTip",
+      "accounts": [
+        {
+          "name": "sender",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "receiver",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amtLamports",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -51,10 +98,6 @@
       "type": {
         "kind": "struct",
         "fields": [
-          {
-            "name": "totalGifs",
-            "type": "u64"
-          },
           {
             "name": "gifList",
             "type": {
@@ -80,12 +123,35 @@
           {
             "name": "userAddress",
             "type": "publicKey"
+          },
+          {
+            "name": "upVoters",
+            "type": {
+              "vec": "publicKey"
+            }
           }
         ]
       }
     }
   ],
+  "errors": [
+    {
+      "code": 300,
+      "name": "InvalidGifLink",
+      "msg": "Gif link provided is invalid!"
+    },
+    {
+      "code": 301,
+      "name": "GifLinkAlreadyExists",
+      "msg": "Gif link already exists!"
+    },
+    {
+      "code": 302,
+      "name": "GifLinkNotFound",
+      "msg": "Gif link does not exist!"
+    }
+  ],
   "metadata": {
-    "address": "8D4EYepS4tfFvy8SJL2WiyigoaaEHQx6BHp3SJGqxHD9"
+    "address": "494g856aNoMPdqu4n6KMwmLKfPTfxn3FtMwVqhZrvHuC"
   }
 }
